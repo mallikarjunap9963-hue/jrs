@@ -230,7 +230,7 @@ export default function CertificatesPage() {
       {/* 1. Navbar */}
       <Navbar activePage="certificates" />
 
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-hidden">
         {/* 2. Hero Banner */}
         <PageHero
           breadcrumb="Mandatory Disclosure"
@@ -243,7 +243,7 @@ export default function CertificatesPage() {
         />
 
         {/* 3. Main Tables Section */}
-        <section className="py-[50px] bg-white scroll-mt-20">
+        <section className="py-[50px] bg-white scroll-mt-20 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-14">
 
             {/* Section Header */}
@@ -280,7 +280,8 @@ export default function CertificatesPage() {
                 </h3>
               </div>
 
-              <div className="bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+              {/* Desktop Table View */}
+              <div className="hidden md:block bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -317,6 +318,55 @@ export default function CertificatesPage() {
                   </table>
                 </div>
               </div>
+
+              {/* Mobile Card View (No Horizontal Scroll) */}
+              <div className="md:hidden bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] divide-y divide-slate-100 overflow-hidden">
+                {generalInformation.map((item) => (
+                  <div
+                    key={item.sno}
+                    className="p-4 flex flex-col gap-1.5 transition-colors hover:bg-slate-50/50"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded bg-[#013aa3]/10 text-[#013aa3] text-[11px] font-bold font-['Manrope',sans-serif] shrink-0">
+                        #{item.sno}
+                      </span>
+                      <span className="text-[11.5px] font-bold text-slate-500 uppercase tracking-wider font-['Manrope',sans-serif]">
+                        {item.info}
+                      </span>
+                    </div>
+                    <div className="pl-8 text-[13.5px] font-semibold text-[#031c3f] leading-relaxed break-words font-['Inter',sans-serif]">
+                      {item.info.toLowerCase().includes('email') ? (
+                        <a
+                          href={`mailto:${item.details.trim()}`}
+                          className="text-[#013aa3] hover:underline break-all"
+                        >
+                          {item.details}
+                        </a>
+                      ) : item.info.toLowerCase().includes('contact') ? (
+                        <div className="flex flex-wrap gap-x-2 gap-y-1">
+                          {item.details.split(',').map((phone, idx) => {
+                            const trimmed = phone.trim()
+                            const cleanPhone = trimmed.replace(/[^+\d]/g, '')
+                            return (
+                              <React.Fragment key={idx}>
+                                {idx > 0 && <span className="text-slate-400">,</span>}
+                                <a
+                                  href={`tel:${cleanPhone}`}
+                                  className="text-[#013aa3] hover:underline whitespace-nowrap"
+                                >
+                                  {trimmed}
+                                </a>
+                              </React.Fragment>
+                            )
+                          })}
+                        </div>
+                      ) : (
+                        item.details
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
 
             {/* SECTION 2: Documents And Information */}
@@ -328,7 +378,8 @@ export default function CertificatesPage() {
                 </h3>
               </div>
 
-              <div className="bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+              {/* Desktop Table View */}
+              <div className="hidden md:block bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -387,6 +438,58 @@ export default function CertificatesPage() {
                   </table>
                 </div>
               </div>
+
+              {/* Mobile Card View (No Horizontal Scroll) */}
+              <div className="md:hidden bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] divide-y divide-slate-100 overflow-hidden">
+                {documentsAndInformation.map((doc) => (
+                  <div
+                    key={doc.sno}
+                    className="p-4 flex flex-col gap-3 transition-colors hover:bg-slate-50/50"
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded bg-[#013aa3]/10 text-[#013aa3] text-[11px] font-bold font-['Manrope',sans-serif] shrink-0 mt-0.5">
+                        #{doc.sno}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-[13.5px] font-semibold text-[#031c3f] leading-snug font-['Inter',sans-serif]">
+                          {doc.title}
+                        </h4>
+                        {doc.authority && (
+                          <p className="text-[11.5px] text-slate-500 mt-1 leading-normal font-['Inter',sans-serif]">
+                            <span className="font-semibold text-slate-600">Authority:</span> {doc.authority}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="pl-8">
+                      {doc.pdfUrl ? (
+                        <button
+                          type="button"
+                          onClick={() => handleDocumentClick(doc)}
+                          className="w-full bg-[#013aa3]/10 hover:bg-[#013aa3] text-[#013aa3] hover:text-white border border-[#013aa3]/20 font-semibold text-xs px-3.5 py-2.5 rounded-lg tracking-wide shadow-2xs hover:shadow-xs transition-all active:scale-[0.98] cursor-pointer inline-flex items-center justify-center gap-1.5 font-['Inter',sans-serif]"
+                        >
+                          <FileText className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate">{doc.btnLabel}</span>
+                        </button>
+                      ) : doc.href ? (
+                        <Link
+                          href={doc.href}
+                          className="w-full bg-[#013aa3]/10 hover:bg-[#013aa3] text-[#013aa3] hover:text-white border border-[#013aa3]/20 font-semibold text-xs px-3.5 py-2.5 rounded-lg tracking-wide shadow-2xs hover:shadow-xs transition-all active:scale-[0.98] cursor-pointer inline-flex items-center justify-center gap-1.5 font-['Inter',sans-serif]"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate">{doc.btnLabel}</span>
+                        </Link>
+                      ) : (
+                        <span className="w-full bg-[#013aa3]/10 text-[#013aa3] border border-[#013aa3]/20 font-semibold text-xs px-3.5 py-2.5 rounded-lg tracking-wide inline-flex items-center justify-center gap-1.5 font-['Inter',sans-serif]">
+                          <FileText className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate">{doc.btnLabel}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
 
             {/* SECTION 3: School Infrastructure */}
@@ -398,7 +501,8 @@ export default function CertificatesPage() {
                 </h3>
               </div>
 
-              <div className="bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+              {/* Desktop Table View */}
+              <div className="hidden md:block bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -465,6 +569,64 @@ export default function CertificatesPage() {
                   </table>
                 </div>
               </div>
+
+              {/* Mobile Card View (No Horizontal Scroll) */}
+              <div className="md:hidden bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] divide-y divide-slate-100 overflow-hidden">
+                {schoolInfrastructure.map((item) => (
+                  <div
+                    key={item.sno}
+                    className="p-4 flex flex-col gap-2 transition-colors hover:bg-slate-50/50"
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded bg-[#013aa3]/10 text-[#013aa3] text-[11px] font-bold font-['Manrope',sans-serif] shrink-0 mt-0.5">
+                        #{item.sno}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[12px] font-bold text-slate-500 uppercase tracking-wider font-['Manrope',sans-serif]">
+                          {item.info}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pl-8 flex flex-col gap-2.5">
+                      {item.details && (
+                        <div className="text-[13.5px] font-semibold text-[#031c3f] leading-relaxed font-['Inter',sans-serif]">
+                          {item.details}
+                        </div>
+                      )}
+
+                      {item.docAction && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedPdf({
+                              title: item.docAction.title,
+                              pdfUrl: item.docAction.pdfUrl,
+                              authority: item.docAction.authority,
+                            })
+                          }
+                          className="w-full bg-[#013aa3]/10 hover:bg-[#013aa3] text-[#013aa3] hover:text-white border border-[#013aa3]/20 font-semibold text-xs px-3.5 py-2.5 rounded-lg tracking-wide shadow-2xs hover:shadow-xs transition-all active:scale-[0.98] cursor-pointer inline-flex items-center justify-center gap-1.5 font-['Inter',sans-serif]"
+                        >
+                          <FileText className="w-3.5 h-3.5 shrink-0" />
+                          <span>{item.docAction.label}</span>
+                        </button>
+                      )}
+
+                      {item.action && (
+                        <a
+                          href={item.action.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full bg-[#e31e24]/10 hover:bg-[#e31e24] text-[#e31e24] hover:text-white border border-[#e31e24]/20 font-semibold text-xs px-3.5 py-2.5 rounded-lg tracking-wide shadow-2xs hover:shadow-xs transition-all active:scale-[0.98] cursor-pointer inline-flex items-center justify-center gap-1.5 font-['Inter',sans-serif]"
+                        >
+                          <Play className="w-3.5 h-3.5 fill-current shrink-0" />
+                          <span>{item.action.label}</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
 
             {/* SECTION 4: School Management Committee */}
@@ -476,8 +638,8 @@ export default function CertificatesPage() {
                 </h3>
               </div>
 
-              {/* DataTables-style controls */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 text-xs sm:text-[13px] text-[#111] font-['Inter',sans-serif]">
+              {/* Desktop DataTables-style controls (hidden on mobile) */}
+              <div className="hidden md:flex items-center justify-between gap-3 mb-3 text-xs sm:text-[13px] text-[#111] font-['Inter',sans-serif]">
                 <div className="flex items-center gap-1.5">
                   <span>Show</span>
                   <select
@@ -492,20 +654,20 @@ export default function CertificatesPage() {
                   <span>entries per page</span>
                 </div>
 
-                <div className="flex items-center gap-1.5 w-full sm:w-auto">
+                <div className="flex items-center gap-1.5">
                   <span>Search:</span>
                   <input
                     type="text"
                     value={smcSearch}
                     onChange={(e) => setSmcSearch(e.target.value)}
                     placeholder="Search records..."
-                    className="border border-slate-300 rounded-lg px-3 py-1.5 text-xs sm:text-[13px] bg-white text-slate-800 focus:outline-hidden focus:border-[#013aa3] focus:ring-1 focus:ring-[#013aa3] w-full sm:w-52"
+                    className="border border-slate-300 rounded-lg px-3 py-1.5 text-xs sm:text-[13px] bg-white text-slate-800 focus:outline-hidden focus:border-[#013aa3] focus:ring-1 focus:ring-[#013aa3] w-52"
                   />
                 </div>
               </div>
 
-              {/* SMC Table */}
-              <div className="bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+              {/* Desktop SMC Table */}
+              <div className="hidden md:block bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -576,8 +738,8 @@ export default function CertificatesPage() {
                 </div>
               </div>
 
-              {/* DataTables-style pagination info */}
-              <div className="flex items-center justify-between mt-3 text-xs sm:text-[13px] text-[#111] font-['Inter',sans-serif]">
+              {/* Desktop pagination info (hidden on mobile) */}
+              <div className="hidden md:flex items-center justify-between mt-3 text-xs sm:text-[13px] text-[#111] font-['Inter',sans-serif]">
                 <div>
                   Showing 1 to {filteredSmc.length} of {filteredSmc.length} entry
                 </div>
@@ -599,6 +761,90 @@ export default function CertificatesPage() {
                   >
                     ›
                   </button>
+                </div>
+              </div>
+
+              {/* Mobile View for SMC (Visible only on mobile, No Horizontal Scroll) */}
+              <div className="md:hidden space-y-3">
+                {/* Mobile Search & Filter */}
+                <div className="flex flex-col gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+                  <input
+                    type="text"
+                    value={smcSearch}
+                    onChange={(e) => setSmcSearch(e.target.value)}
+                    placeholder="Search records..."
+                    className="border border-slate-300 rounded-lg px-3 py-2 text-xs bg-white text-slate-800 focus:outline-hidden focus:border-[#013aa3] focus:ring-1 focus:ring-[#013aa3] w-full"
+                  />
+                  <div className="flex items-center justify-between text-[11.5px] text-slate-500 font-['Inter',sans-serif]">
+                    <div className="flex items-center gap-1.5">
+                      <span>Show</span>
+                      <select
+                        value={entriesPerPage}
+                        onChange={(e) => setEntriesPerPage(e.target.value)}
+                        className="border border-slate-300 rounded px-2 py-0.5 text-xs bg-white text-slate-800"
+                      >
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                      </select>
+                      <span>entries</span>
+                    </div>
+                    <span>{filteredSmc.length} record{filteredSmc.length === 1 ? '' : 's'}</span>
+                  </div>
+                </div>
+
+                {/* Mobile SMC Cards */}
+                <div className="bg-white rounded-xl border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.05)] divide-y divide-slate-100 overflow-hidden">
+                  {filteredSmc.length > 0 ? (
+                    filteredSmc.map((item) => (
+                      <div
+                        key={item.sno}
+                        className="p-4 flex flex-col gap-3 transition-colors hover:bg-slate-50/50"
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded bg-[#013aa3]/10 text-[#013aa3] text-[11px] font-bold font-['Manrope',sans-serif] shrink-0 mt-0.5">
+                            #{item.sno}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-[13.5px] font-semibold text-[#031c3f] leading-snug font-['Inter',sans-serif]">
+                              {item.title}
+                            </h4>
+                            {item.authority && (
+                              <p className="text-[11.5px] text-slate-500 mt-1 leading-normal font-['Inter',sans-serif]">
+                                <span className="font-semibold text-slate-600">Authority:</span> {item.authority}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="pl-8">
+                          {item.href ? (
+                            <Link
+                              href={item.href}
+                              className="w-full bg-[#013aa3]/10 hover:bg-[#013aa3] text-[#013aa3] hover:text-white border border-[#013aa3]/20 font-semibold text-xs px-3.5 py-2.5 rounded-lg tracking-wide shadow-2xs hover:shadow-xs transition-all active:scale-[0.98] cursor-pointer inline-flex items-center justify-center gap-1.5 font-['Inter',sans-serif]"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                              <span className="truncate">{item.btnLabel}</span>
+                            </Link>
+                          ) : (
+                            <span className="w-full bg-[#013aa3]/10 text-[#013aa3] border border-[#013aa3]/20 font-semibold text-xs px-3.5 py-2.5 rounded-lg tracking-wide inline-flex items-center justify-center gap-1.5 font-['Inter',sans-serif]">
+                              <FileText className="w-3.5 h-3.5 shrink-0" />
+                              <span className="truncate">{item.btnLabel}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-6 text-center text-slate-500 text-xs italic font-['Inter',sans-serif]">
+                      No matching records found
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile Pagination Status */}
+                <div className="text-[11.5px] text-slate-500 text-center font-['Inter',sans-serif]">
+                  Showing 1 to {filteredSmc.length} of {filteredSmc.length} entry
                 </div>
               </div>
             </section>
